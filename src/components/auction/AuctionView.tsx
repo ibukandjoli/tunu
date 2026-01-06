@@ -98,9 +98,9 @@ export function AuctionView({ initialAuction, initialBids, user }: AuctionViewPr
                         </div>
                     </div>
 
-                    <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-bold prose-h3:text-2xl prose-h3:mb-6 prose-p:my-4 prose-p:leading-7 prose-strong:font-extrabold prose-strong:text-foreground">
-                        <h3>À propos de {auction.title}</h3>
-                        <div className="markdown-content text-muted-foreground">
+                    <div className="mt-8 pt-8 border-t">
+                        <h3 className="text-2xl font-extrabold tracking-tight mb-6">À propos de {auction.title}</h3>
+                        <div className="prose prose-slate dark:prose-invert max-w-none text-foreground font-light leading-relaxed prose-p:my-6 prose-strong:font-bold prose-strong:text-primary prose-strong:text-lg prose-headings:font-bold">
                             {/* @ts-ignore */}
                             <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
                                 {auction.description}
