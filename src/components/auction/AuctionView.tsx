@@ -45,11 +45,11 @@ export function AuctionView({ initialAuction, initialBids, user }: AuctionViewPr
                     <AuctionHero auction={auction} />
 
                     {/* Live Demo CTA (Auth Gated) */}
-                    <div className="flex items-center justify-between">
-                        <div className="flex gap-2">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div className="flex flex-wrap gap-2">
                             {/* Stack Tags */}
                             {auction.stack_tags && auction.stack_tags.map((tag) => (
-                                <Badge key={tag} variant="secondary" className="rounded-full px-3 text-xs font-normal">
+                                <Badge key={tag} variant="secondary" className="rounded-full px-3 text-xs font-normal whitespace-nowrap">
                                     {tag}
                                 </Badge>
                             ))}
@@ -57,13 +57,13 @@ export function AuctionView({ initialAuction, initialBids, user }: AuctionViewPr
 
                         {user ? (
                             auction.demo_url && (
-                                <Button variant="outline" size="sm" className="gap-2 cursor-pointer" onClick={() => window.open(auction.demo_url, '_blank')}>
+                                <Button variant="outline" size="sm" className="gap-2 cursor-pointer w-full sm:w-auto" onClick={() => window.open(auction.demo_url, '_blank')}>
                                     Voir le site en live <ExternalLink className="h-3 w-3" />
                                 </Button>
                             )
                         ) : (
                             <AuthModal>
-                                <Button variant="outline" size="sm" className="gap-2 cursor-pointer opacity-70">
+                                <Button variant="outline" size="sm" className="gap-2 cursor-pointer opacity-70 w-full sm:w-auto">
                                     <Lock className="h-3 w-3" /> Voir le site (Connexion requise)
                                 </Button>
                             </AuthModal>

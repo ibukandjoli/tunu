@@ -330,9 +330,9 @@ export function LandingPage({ user, auction, bids, pastAuctions }: LandingPagePr
                         <span className="text-sm text-muted-foreground ml-2">© 2024</span>
                     </div>
                     <div className="flex gap-6 text-sm text-muted-foreground underline-offset-4">
-                        <a href="#" className="hover:underline">Terms</a>
-                        <a href="#" className="hover:underline">Privacy</a>
-                        <a href="#" className="hover:underline">Contact</a>
+                        <a href="/terms" className="hover:underline">CGU</a>
+                        <a href="/privacy" className="hover:underline">Confidentialité</a>
+                        <a href="/contact" className="hover:underline">Contact</a>
                     </div>
                 </div>
             </footer>
