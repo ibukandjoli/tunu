@@ -15,7 +15,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export const translations = {
     fr: {
         'hero.title': 'Prenez la relève.',
-        'hero.subtitle': 'Chaque jour à midi, une opportunité unique d\'acquérir un projet à fort potentiel, prêt à décoller. Ne partez plus de zéro.',
+        'hero.subtitle': 'Chaque jour à midi, nous vous offrons une opportunité unique d\'acquérir un projet/business à fort potentiel, prêt à décoller ou qui génère déjà des revenus. Ne partez plus de zéro.',
         'nav.login': 'Connexion',
         'nav.guest': 'Invité',
         'nav.fr': 'FR',
