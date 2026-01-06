@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
 
-export default async function EditAuctionPage({ params }: { params: { id: string } }) {
+export default async function EditAuctionPage(props: { params: Promise<{ id: string }> }) {
+    const params = await props.params
     const supabase = await createClient()
     const { data: auction } = await supabase
         .from('auctions')
