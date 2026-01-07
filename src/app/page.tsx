@@ -5,6 +5,33 @@ import { Auction, Bid } from '@/hooks/useRealtimeAuction'
 
 export const dynamic = 'force-dynamic'
 
+import { Metadata } from 'next'
+
+export async function generateMetadata(): Promise<Metadata> {
+  const supabase = await createClient()
+  const { data: auction } = await supabase
+    .from('auctions')
+    .select('title, description, demo_url')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single()
+
+  if (!auction) {
+    return {
+      title: 'TUNU | Aucune enchère en cours',
+    }
+  }
+
+  return {
+    title: `Enchère du jour : ${auction.title}`,
+    description: `Offre actuelle sur ${auction.title}. ${auction.description ? auction.description.substring(0, 150) : ''}...`,
+    openGraph: {
+      title: auction.title,
+      description: `Misez sur ${auction.title} maintenant sur TUNU.`,
+    },
+  }
+}
+
 export default async function Home() {
   const supabase = await createClient()
 
@@ -54,8 +81,29 @@ export default async function Home() {
 
   const { data: { user } } = await supabase.auth.getUser()
 
+  // SEO Structured Data (JSON-LD)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: auction.title,
+    description: auction.description,
+    image: auction.image_urls?.[0] || 'https://tunudrop.com/icon.png',
+    offers: {
+      '@type': 'Offer',
+      price: auction.current_price,
+      priceCurrency: 'EUR',
+      availability: 'https://schema.org/InStock',
+      url: 'https://tunudrop.com',
+      priceValidUntil: auction.ends_at,
+    }
+  }
+
   return (
     <ClientProviders>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <LandingPage
         user={user}
         auction={auction}
