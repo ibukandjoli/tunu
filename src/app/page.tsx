@@ -87,7 +87,7 @@ export default async function Home() {
     '@type': 'Product',
     name: auction.title,
     description: auction.description,
-    image: auction.image_urls?.[0] || 'https://tunudrop.com/icon.png',
+    image: auction.image_url || 'https://tunudrop.com/icon.png',
     offers: {
       '@type': 'Offer',
       price: auction.current_price,
