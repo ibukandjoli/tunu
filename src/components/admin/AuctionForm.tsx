@@ -75,7 +75,7 @@ export function AuctionForm({ initialData, mode }: AuctionFormProps) {
         monetization_details: initialData?.monetization_details || '',
         stack_tags: initialData?.stack_tags ? initialData.stack_tags.join(', ') : '',
         project_type: initialData?.project_type || 'SaaS',
-        creator_name: initialData?.creator_name || 'Tunu Team',
+        creator_name: initialData?.creator_name || 'Ibuka Ndjoli',
         project_status: initialData?.project_status || 'Live',
         status: initialData?.status || 'draft',
     }
@@ -346,7 +346,7 @@ export function AuctionForm({ initialData, mode }: AuctionFormProps) {
                                             </p>
                                         </TabsContent>
                                         <TabsContent value="preview" className="border rounded-md p-4 min-h-[16rem] bg-muted/30">
-                                            <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-p:my-2">
+                                            <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-bold prose-p:my-4 prose-ul:list-disc prose-ul:pl-4">
                                                 {/* @ts-ignore */}
                                                 <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
                                                     {field.value || 'Rien à afficher'}
