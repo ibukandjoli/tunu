@@ -50,7 +50,7 @@ export function AuctionHero({ auction }: { auction: any }) {
                     </div>
                     <div className="text-sm">
                         <p className="font-semibold text-foreground/90">Conçu par</p>
-                        <p className="text-muted-foreground text-xs">{auction.creator_name || 'Tunu Team'}</p>
+                        <p className="text-muted-foreground text-xs">{auction.creator_name || 'Ibuka Ndjoli'}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-secondary/30 border border-secondary/50">
