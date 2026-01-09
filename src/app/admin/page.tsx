@@ -17,21 +17,33 @@ export const dynamic = 'force-dynamic'
 export default async function AdminDashboard() {
     const supabase = await createClient()
 
-    // Fetch auctions with bids and profiles
-    const { data: auctions } = await supabase
+    // Fetch auctions
+    const { data: auctionsData } = await supabase
         .from('auctions')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+    // Fetch bids with profiles
+    const { data: bidsData } = await supabase
+        .from('bids')
         .select(`
-            *,
-            bids (
-                amount,
-                bidder_id,
-                profiles (
-                    username,
-                    email
-                )
+            amount,
+            auction_id,
+            bidder_id,
+            bidder:profiles (
+                username,
+                email
             )
         `)
-        .order('created_at', { ascending: false })
+
+    // Merge bids into auctions
+    const auctions = auctionsData?.map(auction => {
+        const auctionBids = bidsData?.filter((b: any) => b.auction_id === auction.id) || []
+        return {
+            ...auction,
+            bids: auctionBids
+        }
+    })
 
     // Helper to get max bid
     const getHighestBid = (bids: any[]) => {
