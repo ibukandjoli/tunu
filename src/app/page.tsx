@@ -38,6 +38,7 @@ export default async function Home() {
   const { data: auctionData, error: auctionError } = await supabase
     .from('auctions')
     .select('*')
+    .neq('status', 'draft') // Filter out drafts to prevent leaks
     .order('created_at', { ascending: false })
     .limit(1)
     .single()
