@@ -1,4 +1,4 @@
-```javascript
+
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
@@ -20,9 +20,9 @@ export default async function AdminDashboard() {
     // 1. Try to use Admin Client (Service Role) to bypass RLS
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    
+
     let supabase: any
-    
+
     if (serviceRoleKey) {
         supabase = createClient(supabaseUrl, serviceRoleKey)
     } else {
@@ -50,7 +50,7 @@ amount,
         email
     )
         `)
-    
+
     if (bidsError) console.error("Error fetching bids:", bidsError)
 
     // Merge bids into auctions
@@ -148,19 +148,19 @@ amount,
                                                     if (diff < 0) return 'Terminée'
                                                     if (days === 0) return "Aujourd'hui"
                                                     if (days === 1) return 'Demain'
-                                                    return `Dans ${ days } jours`
+                                                    return `Dans ${days} jours`
                                                 })()}
                                             </span>
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Button variant="ghost" size="icon" asChild>
-                                            <Link href={`/? auction = ${ auction.slug } `} target="_blank">
+                                            <Link href={`/? auction = ${auction.slug} `} target="_blank">
                                                 <Eye className="w-4 h-4" />
                                             </Link>
                                         </Button>
                                         <Button variant="ghost" size="icon" asChild>
-                                            <Link href={`/ admin / edit / ${ auction.id } `}>
+                                            <Link href={`/ admin / edit / ${auction.id} `}>
                                                 <Pencil className="w-4 h-4" />
                                             </Link>
                                         </Button>
