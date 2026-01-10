@@ -44,9 +44,33 @@ export default async function AdminDashboard() {
 
     if (bidsError) console.error("Error fetching bids:", bidsError)
 
-    // Fetch profiles manually (Manual Join)
+    // Fetch users via Auth Admin (Source of Truth for Emails)
+    // The 'profiles' table seems empty or out of sync, so we use the Auth API directly.
     let profilesData: any[] = []
-    if (bidsData && bidsData.length > 0) {
+    let authError: any = null
+
+    if (bidsData && bidsData.length > 0 && serviceRoleKey && !isAnonKey) {
+        const bidderIds = Array.from(new Set(bidsData.map((b: any) => b.bidder_id).filter(Boolean)))
+
+        try {
+            const userPromises = bidderIds.map(async (id: any) => {
+                const { data: { user }, error } = await supabase.auth.admin.getUserById(id)
+                if (error || !user) return null
+                return {
+                    id: user.id,
+                    username: user.user_metadata?.username || user.user_metadata?.full_name || 'Utilisateur',
+                    email: user.email
+                }
+            })
+
+            const users = await Promise.all(userPromises)
+            profilesData = users.filter(Boolean)
+        } catch (e) {
+            console.error("Auth Admin Error:", e)
+            authError = e
+        }
+    } else if (bidsData && bidsData.length > 0) {
+        // Fallback for Anon Key (restricted view)
         const bidderIds = Array.from(new Set(bidsData.map((b: any) => b.bidder_id).filter(Boolean)))
         const { data: profiles } = await supabase
             .from('profiles')
@@ -61,6 +85,10 @@ export default async function AdminDashboard() {
         // Attach profile to bid
         const enrichedBids = auctionBids.map((bid: any) => {
             const bidder = profilesData.find(p => p.id === bid.bidder_id)
+            // Fallback if bidder not found but we have an ID
+            if (!bidder && bid.bidder_id) {
+                return { ...bid, bidder: { username: 'ID: ' + bid.bidder_id.slice(0, 8) + '...', email: 'Email masqué (Profil introuvable)' } }
+            }
             return { ...bid, bidder }
         })
         return {
