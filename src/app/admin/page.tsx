@@ -206,12 +206,12 @@ export default async function AdminDashboard() {
                                     </TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Button variant="ghost" size="icon" asChild>
-                                            <Link href={`/? auction = ${auction.slug} `} target="_blank">
+                                            <Link href={`/?auction=${auction.slug}`} target="_blank">
                                                 <Eye className="w-4 h-4" />
                                             </Link>
                                         </Button>
                                         <Button variant="ghost" size="icon" asChild>
-                                            <Link href={`/ admin / edit / ${auction.id} `}>
+                                            <Link href={`/admin/edit/${auction.id}`}>
                                                 <Pencil className="w-4 h-4" />
                                             </Link>
                                         </Button>
