@@ -1,4 +1,6 @@
-import { createClient } from '@/lib/supabase/server'
+```javascript
+import { createClient as createServerClient } from '@/lib/supabase/server'
+import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,29 +17,44 @@ import { ExternalLink, Eye, Pencil } from 'lucide-react'
 export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboard() {
-    const supabase = await createClient()
+    // 1. Try to use Admin Client (Service Role) to bypass RLS
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    
+    let supabase: any
+    
+    if (serviceRoleKey) {
+        supabase = createClient(supabaseUrl, serviceRoleKey)
+    } else {
+        console.warn("SUPABASE_SERVICE_ROLE_KEY is missing. Falling back to authenticated user client (RLS may hide data).")
+        supabase = await createServerClient()
+    }
 
     // Fetch auctions
-    const { data: auctionsData } = await supabase
+    const { data: auctionsData, error: auctionError } = await supabase
         .from('auctions')
         .select('*')
         .order('created_at', { ascending: false })
 
+    if (auctionError) console.error("Error fetching auctions:", auctionError)
+
     // Fetch bids with profiles
-    const { data: bidsData } = await supabase
+    const { data: bidsData, error: bidsError } = await supabase
         .from('bids')
         .select(`
-            amount,
-            auction_id,
-            bidder_id,
-            bidder:profiles (
-                username,
-                email
-            )
+amount,
+    auction_id,
+    bidder_id,
+    bidder: profiles(
+        username,
+        email
+    )
         `)
+    
+    if (bidsError) console.error("Error fetching bids:", bidsError)
 
     // Merge bids into auctions
-    const auctions = auctionsData?.map(auction => {
+    const auctions = auctionsData?.map((auction: any) => {
         const auctionBids = bidsData?.filter((b: any) => b.auction_id === auction.id) || []
         return {
             ...auction,
@@ -73,7 +90,7 @@ export default async function AdminDashboard() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {auctions?.map((auction) => {
+                        {auctions?.map((auction: any) => {
                             const isExpired = new Date(auction.ends_at) < new Date()
                             const isEnded = auction.status === 'sold' || auction.status === 'ended' || isExpired
 
@@ -98,8 +115,8 @@ export default async function AdminDashboard() {
                             }
 
                             const highestBid = getHighestBid(auction.bids)
-                            const winnerName = highestBid?.profiles?.username || 'Aucune offre'
-                            const winnerEmail = highestBid?.profiles?.email
+                            const winnerName = highestBid?.bidder?.username || 'Aucune offre'
+                            const winnerEmail = highestBid?.bidder?.email
 
                             return (
                                 <TableRow key={auction.id}>
@@ -121,15 +138,29 @@ export default async function AdminDashboard() {
                                         </div>
                                     </TableCell>
                                     <TableCell>{new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(auction.current_price)}</TableCell>
-                                    <TableCell>{new Date(auction.ends_at).toLocaleString('fr-FR')}</TableCell>
+                                    <TableCell>
+                                        <div className="flex flex-col">
+                                            <span>{new Date(auction.ends_at).toLocaleString('fr-FR')}</span>
+                                            <span className="text-xs text-muted-foreground">
+                                                {(() => {
+                                                    const diff = new Date(auction.ends_at).getTime() - new Date().getTime()
+                                                    const days = Math.ceil(diff / (1000 * 60 * 60 * 24))
+                                                    if (diff < 0) return 'Terminée'
+                                                    if (days === 0) return "Aujourd'hui"
+                                                    if (days === 1) return 'Demain'
+                                                    return `Dans ${ days } jours`
+                                                })()}
+                                            </span>
+                                        </div>
+                                    </TableCell>
                                     <TableCell className="text-right space-x-2">
                                         <Button variant="ghost" size="icon" asChild>
-                                            <Link href={`/?auction=${auction.slug}`} target="_blank">
+                                            <Link href={`/? auction = ${ auction.slug } `} target="_blank">
                                                 <Eye className="w-4 h-4" />
                                             </Link>
                                         </Button>
                                         <Button variant="ghost" size="icon" asChild>
-                                            <Link href={`/admin/edit/${auction.id}`}>
+                                            <Link href={`/ admin / edit / ${ auction.id } `}>
                                                 <Pencil className="w-4 h-4" />
                                             </Link>
                                         </Button>
