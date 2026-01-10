@@ -77,6 +77,13 @@ amount,
                 </Button>
             </div>
 
+            {!serviceRoleKey && (
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+                    <p className="font-bold">Attention</p>
+                    <p>La clé <code>SUPABASE_SERVICE_ROLE_KEY</code> est manquante. Les données sensibles (emails, enchères des autres) sont masquées par sécurité.</p>
+                </div>
+            )}
+
             <div className="rounded-md border bg-card">
                 <Table>
                     <TableHeader>
