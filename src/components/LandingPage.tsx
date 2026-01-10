@@ -284,4 +284,4 @@ export function LandingPage({ user, auction, bids, pastAuctions }: LandingPagePr
         </div>
     )
 }
-}
+
