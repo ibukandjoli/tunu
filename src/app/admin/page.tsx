@@ -17,16 +17,15 @@ import { ExternalLink, Eye, Pencil } from 'lucide-react'
 export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboard() {
-    // 1. Try to use Admin Client (Service Role) to bypass RLS
+    // 1. Check Key Integrity
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
+    const isAnonKey = serviceRoleKey === process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
     let supabase: any
-
-    if (serviceRoleKey) {
+    if (serviceRoleKey && !isAnonKey) {
         supabase = createClient(supabaseUrl, serviceRoleKey)
     } else {
-        console.warn("SUPABASE_SERVICE_ROLE_KEY is missing. Falling back to authenticated user client (RLS may hide data).")
         supabase = await createServerClient()
     }
 
@@ -38,27 +37,35 @@ export default async function AdminDashboard() {
 
     if (auctionError) console.error("Error fetching auctions:", auctionError)
 
-    // Fetch bids with profiles
+    // Fetch bids (RAW - No joins to prevent FK errors)
     const { data: bidsData, error: bidsError } = await supabase
         .from('bids')
-        .select(`
-amount,
-    auction_id,
-    bidder_id,
-    bidder: profiles(
-        username,
-        email
-    )
-        `)
+        .select('*')
 
     if (bidsError) console.error("Error fetching bids:", bidsError)
+
+    // Fetch profiles manually (Manual Join)
+    let profilesData: any[] = []
+    if (bidsData && bidsData.length > 0) {
+        const bidderIds = Array.from(new Set(bidsData.map((b: any) => b.bidder_id).filter(Boolean)))
+        const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, username, email')
+            .in('id', bidderIds)
+        profilesData = profiles || []
+    }
 
     // Merge bids into auctions
     const auctions = auctionsData?.map((auction: any) => {
         const auctionBids = bidsData?.filter((b: any) => b.auction_id === auction.id) || []
+        // Attach profile to bid
+        const enrichedBids = auctionBids.map((bid: any) => {
+            const bidder = profilesData.find(p => p.id === bid.bidder_id)
+            return { ...bid, bidder }
+        })
         return {
             ...auction,
-            bids: auctionBids
+            bids: enrichedBids
         }
     })
 
@@ -77,12 +84,31 @@ amount,
                 </Button>
             </div>
 
+            {/* ERROR ALERTS */}
             {!serviceRoleKey && (
-                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4" role="alert">
+                <div className="bg-destructive/10 border-l-4 border-destructive text-destructive p-4 mb-4" role="alert">
                     <p className="font-bold">Attention</p>
-                    <p>La clé <code>SUPABASE_SERVICE_ROLE_KEY</code> est manquante. Les données sensibles (emails, enchères des autres) sont masquées par sécurité.</p>
+                    <p>La clé <code>SUPABASE_SERVICE_ROLE_KEY</code> est manquante.</p>
                 </div>
             )}
+            {isAnonKey && (
+                <div className="bg-destructive/10 border-l-4 border-destructive text-destructive p-4 mb-4" role="alert">
+                    <p className="font-bold">Configuration Incorrecte</p>
+                    <p>Vous avez utilisé la clé <strong>ANON</strong> à la place de la clé <strong>SERVICE_ROLE</strong>. Elle ne permet pas de voir les emails.</p>
+                </div>
+            )}
+
+            {/* DEBUG INFO (Temporary) */}
+            <details className="mb-4 p-2 bg-slate-100 rounded text-xs text-slate-700">
+                <summary className="cursor-pointer font-bold">Outils de Débogage (Cliquer pour voir)</summary>
+                <div className="mt-2 space-y-2">
+                    <p><strong>Status Clé:</strong> {serviceRoleKey ? (isAnonKey ? "❌ Anon Key Used" : "✅ Service Key Active") : "❌ Missing"}</p>
+                    <p><strong>Enchères trouvées (Total BDD):</strong> {auctionsData?.length ?? 0}</p>
+                    <p><strong>Offres trouvées (Total BDD):</strong> {bidsData?.length ?? 0}</p>
+                    <p><strong>Profils trouvés:</strong> {profilesData?.length ?? 0}</p>
+                    {bidsError && <p className="text-red-600"><strong>Erreur Bids:</strong> {JSON.stringify(bidsError)}</p>}
+                </div>
+            </details>
 
             <div className="rounded-md border bg-card">
                 <Table>
