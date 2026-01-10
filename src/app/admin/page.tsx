@@ -126,17 +126,7 @@ export default async function AdminDashboard() {
                 </div>
             )}
 
-            {/* DEBUG INFO (Temporary) */}
-            <details className="mb-4 p-2 bg-slate-100 rounded text-xs text-slate-700">
-                <summary className="cursor-pointer font-bold">Outils de Débogage (Cliquer pour voir)</summary>
-                <div className="mt-2 space-y-2">
-                    <p><strong>Status Clé:</strong> {serviceRoleKey ? (isAnonKey ? "❌ Anon Key Used" : "✅ Service Key Active") : "❌ Missing"}</p>
-                    <p><strong>Enchères trouvées (Total BDD):</strong> {auctionsData?.length ?? 0}</p>
-                    <p><strong>Offres trouvées (Total BDD):</strong> {bidsData?.length ?? 0}</p>
-                    <p><strong>Profils trouvés:</strong> {profilesData?.length ?? 0}</p>
-                    {bidsError && <p className="text-red-600"><strong>Erreur Bids:</strong> {JSON.stringify(bidsError)}</p>}
-                </div>
-            </details>
+
 
             <div className="rounded-md border bg-card">
                 <Table>
