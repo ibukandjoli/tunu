@@ -41,7 +41,7 @@ export function MakeOfferModal({ auctionId, auctionTitle }: MakeOfferModalProps)
                 .insert({
                     auction_id: auctionId,
                     amount: parseFloat(amount),
-                    amount: parseFloat(amount),
+
                     // "contact_info": `${contact} | Note: ${message}`
                     contact_info: message ? `${contact} (Note: ${message})` : contact
                 })
