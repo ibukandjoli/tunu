@@ -244,56 +244,55 @@ export default async function AdminDashboard() {
                             </TableRow>
                         )}
                     </TableBody>
-                </TableBody>
-            </Table>
-        </div>
+                </Table>
+            </div>
 
-            {/* OFFERS SECTION */ }
-    <div className="space-y-4 pt-8">
-        <h3 className="text-xl font-bold tracking-tight">Dernières Propositions</h3>
-        <div className="rounded-md border bg-card">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Projet</TableHead>
-                        <TableHead>Montant Proposé</TableHead>
-                        <TableHead>Contact</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Note</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {/* @ts-ignore */}
-                    {allOffers?.map((offer: any) => (
-                        <TableRow key={offer.id}>
-                            <TableCell className="font-medium">
-                                {offer.auction?.title || 'Enchère supprimée'}
-                            </TableCell>
-                            <TableCell>
-                                {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(offer.amount)}
-                            </TableCell>
-                            <TableCell>{offer.contact_info}</TableCell>
-                            <TableCell>
-                                {new Date(offer.created_at).toLocaleString('fr-FR')}
-                            </TableCell>
-                            <TableCell className="max-w-[200px] truncate text-muted-foreground italic">
-                                {/* Basic extraction if message is merged in contact_info */}
-                                {offer.contact_info.includes('Note:') ? 'Voir contact' : '-'}
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                    {/* @ts-ignore */}
-                    {!allOffers?.length && (
-                        <TableRow>
-                            <TableCell colSpan={5} className="h-24 text-center">
-                                Aucune proposition pour le moment.
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </div>
-    </div>
+            {/* OFFERS SECTION */}
+            <div className="space-y-4 pt-8">
+                <h3 className="text-xl font-bold tracking-tight">Dernières Propositions</h3>
+                <div className="rounded-md border bg-card">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Projet</TableHead>
+                                <TableHead>Montant Proposé</TableHead>
+                                <TableHead>Contact</TableHead>
+                                <TableHead>Date</TableHead>
+                                <TableHead>Note</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {/* @ts-ignore */}
+                            {allOffers?.map((offer: any) => (
+                                <TableRow key={offer.id}>
+                                    <TableCell className="font-medium">
+                                        {offer.auction?.title || 'Enchère supprimée'}
+                                    </TableCell>
+                                    <TableCell>
+                                        {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(offer.amount)}
+                                    </TableCell>
+                                    <TableCell>{offer.contact_info}</TableCell>
+                                    <TableCell>
+                                        {new Date(offer.created_at).toLocaleString('fr-FR')}
+                                    </TableCell>
+                                    <TableCell className="max-w-[200px] truncate text-muted-foreground italic">
+                                        {/* Basic extraction if message is merged in contact_info */}
+                                        {offer.contact_info.includes('Note:') ? 'Voir contact' : '-'}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                            {/* @ts-ignore */}
+                            {!allOffers?.length && (
+                                <TableRow>
+                                    <TableCell colSpan={5} className="h-24 text-center">
+                                        Aucune proposition pour le moment.
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
         </div >
     )
 }

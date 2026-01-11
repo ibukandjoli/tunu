@@ -41,10 +41,7 @@ export function MakeOfferModal({ auctionId, auctionTitle }: MakeOfferModalProps)
                 .insert({
                     auction_id: auctionId,
                     amount: parseFloat(amount),
-                    contact_info: contact,
-                    // If we add a message column later, we can use it. 
-                    // For now, let's append it to contact info or ignore if schema doesn't have it.
-                    // Based on my SQL, I only put contact_info. I'll stick to that or combine them.
+                    amount: parseFloat(amount),
                     // "contact_info": `${contact} | Note: ${message}`
                     contact_info: message ? `${contact} (Note: ${message})` : contact
                 })
