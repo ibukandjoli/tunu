@@ -4,6 +4,7 @@ import { Auction, Bid, useRealtimeAuction } from '@/hooks/useRealtimeAuction'
 import { AuctionHero } from './AuctionHero'
 import { AuctionTimer } from './AuctionTimer'
 import { BidForm } from './BidForm'
+import { MakeOfferModal } from './MakeOfferModal'
 import { BidTicker } from './BidTicker'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
@@ -135,6 +136,17 @@ export function AuctionView({ initialAuction, initialBids, user }: AuctionViewPr
                             </CardHeader>
                             <CardContent className="space-y-6">
                                 <BidForm auction={auction} user={user} />
+
+                                <div className="relative">
+                                    <div className="absolute inset-0 flex items-center">
+                                        <span className="w-full border-t" />
+                                    </div>
+                                    <div className="relative flex justify-center text-xs uppercase">
+                                        <span className="bg-background px-2 text-muted-foreground">Ou</span>
+                                    </div>
+                                </div>
+
+                                <MakeOfferModal auctionId={auction.id} auctionTitle={auction.title} />
                                 <Separator />
                                 <BidTicker bids={bids} />
                             </CardContent>
